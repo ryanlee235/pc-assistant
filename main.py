@@ -70,7 +70,10 @@ def main(filename):
                     os.startfile(file)
                     time.sleep(2)
                     
-                    play_music(filename)
+    
+                    if filename[word].lower() == 'spotify':
+                        play_music(filename)
+
 
 def play_music(music):
     start_words = ["on" ,'start']
