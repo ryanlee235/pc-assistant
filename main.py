@@ -4,13 +4,6 @@ import pyaudio
 import speech_recognition as sr
 import time
 
-
-def find_exe_path(filename):
-    for root, dir, files in os.walk(r'C:\\'):
-        for file in files:
-            if file.lower().startswith(filename.lower()) and file.lower().endswith(".exe"):
-               return os.path.join(root, file)
-
             
 def get_key_words(voice):
     key_word = {
@@ -31,8 +24,11 @@ def get_key_words(voice):
     current_value = ''
 
     for word in words:
+        #if there is a word thats in the dick
         if word.lower() in key_word:
+            #if pointer points to current word
             if current_keyword is not None:
+                #adding key, with value pair
                 keywords_with_values[current_keyword] = current_value.strip()
                 current_value = ''
 
@@ -45,46 +41,58 @@ def get_key_words(voice):
 
     return keywords_with_values
 
-
-def open_app(voice):
-    start_words = ["open", 'start', 'on']
-    action_words = ['play']
-
-    for words in start_words:
-        if words in voice:
-            path = find_exe_path(voice[words])
-            os.startfile(path)
-            time.sleep(3)
-
-    if "spotify" in path.lower():
-            pyautogui.hotkey('ctrl', 'l')
-            time.sleep(2)
-
-            for word in action_words:
-                if word in voice:
-                    pyautogui.write(voice[word])
-
-            for key in ['enter','pagedown','tab','enter','enter']:
-                    time.sleep(2)
-                    pyautogui.press(key) 
-
-    
-
 def get_voice():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("What would you like to do? ")
+        print("what would you like to do?")
         audio = r.listen(source)
+
         try:
             voice = r.recognize_google(audio)
-            print(f"I Beleive you said: {voice}")
+            print(f"I beleive you said:  {voice}")
             return voice
-        
-        
-        except sr.UnknownValueError:
-            print("I did not understand what you said")
+        except sr.UnKnownValueError:
+            print("I did not understand what you said, please try again! ")
+
+
+
+def main(filename):
+    start_words = ["on" ,'start']
+    os.chdir('/Users/ryanlee/Desktop')
+
+    current_directory = os.getcwd()
+
+    files = os.listdir()
+    for word in start_words:
+        for file in files:
+            if word in filename:
+                if file.lower().startswith(filename[word].lower()):
+                    os.startfile(file)
+                    time.sleep(2)
+                    
+                    play_music(filename)
+
+def play_music(music):
+    start_words = ["on" ,'start']
+    action_words = ["play", "look up", "text"]
+    
+    for word in start_words:
+        if word in music:
+            pyautogui.hotkey("ctrl", 'l')
+            time.sleep(3)
+
+        for words in action_words:
+            if words in music:
+                pyautogui.write(music[words])
+                time.sleep(2)
+
+        for key in ['enter', 'pagedown', 'tab', 'enter', 'enter']:
+            pyautogui.press(key)
+            
+
+                
 
 if __name__ == "__main__":
-    words = get_key_words(get_voice())
+    word = get_key_words(get_voice())
 
-    open_app(words)
+    main(word)
